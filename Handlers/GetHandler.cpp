@@ -136,9 +136,9 @@ void GetHandler::handle(const Request* request, Response* response, LocationConf
     std::cout << "Received GET request" << std::endl;
     char cwd[PATH_MAX];
     std::string fullpath(cwd);
+    
     if (getcwd(cwd, sizeof(cwd)) != NULL)
         fullpath.assign(cwd);
-    
     fullpath += locationconfig.root;
     // if (fullpath[fullpath.length()-1] != '/' && locationconfig.index[0] != '/')
     //     fullpath += '/';
@@ -188,10 +188,11 @@ void GetHandler::handle(const Request* request, Response* response, LocationConf
                 response->setStatusCode(200);
                 response->setBody(fileContent);
                 response->setHeader("Content-Type", "text/html");
-                LOG_INFO("AUTOINDEX resource");
+                LOG_INFO("Autoindex resource served");
             } else {
-                LOG_INFO("Forbidden resource");
                 response->setStatusCode(403);
+                response->setBody("<html><body><h1>403 Forbidden</h1></body></html>");
+                LOG_INFO("Access to directory listing forbidden.");
             }
             return ;
         }
@@ -218,7 +219,7 @@ void GetHandler::handle(const Request* request, Response* response, LocationConf
             response->setStatusCode(200);
             response->setBody(bufferStream.str());
             response->setHeader("Content-Type", response->getMimeType(fullpath));
-            LOG_INFO("Read Resource Succesfully");
+            LOG_INFO("Read Resource Succesfully" + fullpath);
         }
         response->setStatusCode(200);
     }
